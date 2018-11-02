@@ -1,0 +1,23 @@
+language: go
+go: 
+  - 1.x
+
+install:
+  - go get -t ./...
+  - go get -u golang.org/x/lint/golint
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls
+  - go get github.com/gordonklaus/ineffassign
+  - go get github.com/fzipp/gocyclo
+  - go get honnef.co/go/tools/cmd/megacheck
+
+script:
+  - test -z "$(gofmt -s -l . 2>&1 | grep -v vendor | tee /dev/stderr)"
+  - go vet ./...
+  - golint -set_exit_status ./...
+  - ineffassign .
+  - gocyclo -over 15 $(find . -iname "*.go")
+  - megacheck -simple.exit-non-zero=true -staticcheck.exit-non-zero=true -unused.exit-non-zero=true ./...
+  - megacheck -tests=false -simple.enabled=false -staticcheck.enabled=false -unused.exit-non-zero=true  ./...
+  - go test -v -coverprofile .coverprofile  ./...
+  - $GOPATH/bin/goveralls -v -coverprofile .coverprofile -service=travis-ci

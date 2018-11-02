@@ -1,0 +1,45 @@
+language: go
+go: 
+  - 1.x
+
+install:
+  - go get -u golang.org/x/lint/golint
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls
+  - go get github.com/gordonklaus/ineffassign
+  - go get github.com/fzipp/gocyclo
+  - go get honnef.co/go/tools/cmd/megacheck
+
+script:
+  - test -z "$(gofmt -s -l . 2>&1 | grep -v vendor | tee /dev/stderr)"
+  - go vet ./pkg/... ./cmd/...
+  - golint -set_exit_status ./pkg/... ./cmd/...
+  - ineffassign ./pkg ./cmd
+  - gocyclo -over 15 $(find ./pkg ./cmd -iname "*.go")
+  - megacheck -simple.exit-non-zero=true -staticcheck.exit-non-zero=true -unused.exit-non-zero=true ./pkg/... ./cmd/...
+  - megacheck -tests=false -simple.enabled=false -staticcheck.enabled=false -unused.exit-non-zero=true  ./pkg/... ./cmd/...
+  - go test -v -coverprofile .coverprofile  ./pkg/...
+  - $GOPATH/bin/goveralls -v -coverprofile .coverprofile -service=travis-ci
+
+before_deploy:
+  - CGO_ENABLED=0 GOOS=linux go build -a -o releases/ingestor  -ldflags "-s -w -X main.version=$TRAVIS_TAG" ./cmd/...
+  - tar -czf releases/ingestor.linux-amd64.tar.gz -C releases ingestor
+  - CGO_ENABLED=0 GOOS=darwin go build -a -o releases/ingestor -ldflags "-s -w -X main.version=$TRAVIS_TAG" ./cmd/...
+  - tar -czf releases/ingestor.darwin-amd64.tar.gz -C releases ingestor
+  - CGO_ENABLED=0 GOOS=windows go build -a -o releases/ingestor.exe -ldflags "-s -w -X main.version=$TRAVIS_TAG" ./cmd/...
+  - tar -czf releases/ingestor.windows-amd64.tar.gz -C releases ingestor.exe
+  - cd releases
+  - sha256sum *.tar.gz > sha256sum.txt
+  - cd ..
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN_KEY
+  file:
+    - "releases/ingestor.linux-amd64.tar.gz"
+    - "releases/ingestor.darwin-amd64.tar.gz"
+    - "releases/ingestor.windows-amd64.tar.gz"
+    - "releases/sha256sum.txt"
+  skip_cleanup: true
+  on:
+    tags: true

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "the4thamigouk.demo.ingestor";
+option java_outer_classname = "ContactIngestor";
+
+package ingestor;
+
+service Ingestor {
+  rpc AddSource(AddRequest) returns (AddResponse) {}
+  rpc ListSources(ListRequest) returns (ListResponse) {}
+  rpc ReadSource(ReadRequest) returns (stream ReadResponse) {}
+}
+
+message Source {
+  string id = 1;
+  string filename = 2;
+  // timestamp?
+}
+
+message AddRequest {
+  string filename = 1;
+}
+
+message AddResponse {
+  Source source = 1;
+}
+
+message ListRequest {
+}
+
+message ListResponse {
+  repeated Source sources = 1;
+}
+
+message ReadRequest {
+  string id = 1; 
+}
+
+message ReadResponse {
+  string mobile = 1;
+  string name = 2;
+  string email = 3;
+}
