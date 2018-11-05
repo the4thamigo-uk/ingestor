@@ -48,7 +48,7 @@ To run unit tests :
 
 To build and run the ingestor service :
 
-    go build ./cmd/ingestor && ./ingestor -l :8080 -f ./testdata/data/csv
+    go build ./cmd/ingestor && ./ingestor -l :8080 -f ./testdata/data.csv
 
 To build and run the example reader service :
 
