@@ -9,15 +9,15 @@
 
 This is a simple project for a service that ingests data files in CSV format (containing contact details in this case). The 
 service provides an API implemented with [grpc](https://github.com/grpc/grpc-go), from which clients can extract a stream
-of typed Contact records.
+of typed _Contact_ records from data files of [this form](./testdata/data.csv).
 
 Assumptions : 
 
 - The data files are assumed to be static on disk.
 - The ID in the CSV is assumed not to be a global identifier, and therefore is not exposed to clients of the ingestor service.
 - Mobile numbers are assumed to be correct UK phone numbers an will be canonicalised into the standard [international format](https://www.cm.com/blog/how-to-format-international-telephone-numbers/)
-- The canonicalised mobile number is considered the id of the Contact entity. Thus, a given email can have multiple mobile numbers, but a 
-mobile number can have, at most, one email.
+- The canonicalised mobile number is considered the id of the _Contact_ entity. Thus, a given email can have multiple mobile numbers, but a 
+mobile number can have, at most, one email. (Depending on the business needs the _email_ could instead be used as the id, or we could allow for multiple emails to be stored against a given phone number).
 - If there are two records for the same canonicalised phone number the contact details for the second record will overwrite the first.
 - It is assumed that grpc streaming will provide the 'backpressure' flow-control required to prevent the reader service becoming overloaded with data sent in the stream (needs further research to properly understand this).
 
