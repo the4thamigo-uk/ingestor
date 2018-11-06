@@ -15,7 +15,7 @@ Assumptions :
 
 - The data files are assumed to be static on disk.
 - The ID in the CSV is assumed not to be a global identifier, and therefore is not exposed to clients of the ingestor service.
-- Mobile numbers are assumed to be correct UK phone numbers an will be canonicalised into the standard [international format](https://www.cm.com/blog/how-to-format-international-telephone-numbers/)
+- Mobile numbers are assumed to be correct UK phone numbers and are canonicalised into the standard [international format](https://www.cm.com/blog/how-to-format-international-telephone-numbers/)
 - The canonicalised mobile number is considered the id of the _Contact_ entity. Thus, a given email can have multiple mobile numbers, but a 
 mobile number can have, at most, one email. (Depending on the business needs the _email_ could instead be used as the id, or we could allow for multiple emails to be stored against a given phone number).
 - If there are two records for the same canonicalised phone number the contact details for the second record will overwrite the first.
