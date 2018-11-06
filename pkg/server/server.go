@@ -121,7 +121,7 @@ func (s *server) addSourceFile(file string) (string, error) {
 			return "", err
 		}
 		s.m.Put(id, file)
-		s.l.Printf("Souce Added for '%s' with id '%s", file, id)
+		s.l.Printf("Source Added for '%s' with id '%s", file, id)
 	}
 	return id, nil
 }
