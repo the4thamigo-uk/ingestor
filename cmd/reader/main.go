@@ -13,6 +13,7 @@ import (
 func main() {
 	addr := pflag.StringP("address", "c", ":8080", "Address that the server should connect to")
 	sAddr := pflag.StringP("store", "s", "127.0.0.1", "Address of Cassandra host")
+	pflag.Parse()
 
 	l := log.New()
 	c, err := cassandra.New(*sAddr)
