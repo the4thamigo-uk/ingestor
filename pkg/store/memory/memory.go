@@ -57,3 +57,7 @@ func (ms *memorystore) Sources() ([]string, error) {
 	}
 	return ss, nil
 }
+
+func (ms *memorystore) Close() error {
+	return nil
+}
