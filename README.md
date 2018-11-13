@@ -50,6 +50,10 @@ To build and run the ingestor service serving the given datafile :
 
     go build ./cmd/ingestor && ./ingestor -l :8080 -f ./testdata/data.csv
 
+To build and run the cli tool to add a data file to the ingestor use :
+
+    go build ./cmd/cli && ./cli -s :8080 add -f ./testdata/data.csv
+
 To build and run the example reader service :
 
     go build ./cmd/reader && ./reader -c :8080
