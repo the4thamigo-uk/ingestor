@@ -6,15 +6,12 @@ import (
 	"time"
 )
 
-type Cassandra interface {
-	store.Store
-}
-
 type cassandra struct {
 	s  *gocql.Session
 	ks string
 }
 
+// New creates an instance of a cassandra store
 func New(keySpace string, hosts ...string) (store.Store, error) {
 	c := gocql.NewCluster(hosts...)
 	c.Timeout = time.Second * 10
