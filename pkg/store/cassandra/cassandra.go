@@ -41,7 +41,8 @@ func (s *cassandra) PutSource(id string) error {
 func (s *cassandra) PutContacts(cs []*store.Contact) error {
 	b := s.s.NewBatch(gocql.LoggedBatch)
 	for _, c := range cs {
-		b.Query(`INSERT INTO contacts (mobile, name, email) VALUES (?,?,?)`, s.ks, c.Mobile, c.Name, c.Email)
+		// TODO cql injection issues?
+		b.Query(`INSERT INTO contacts (mobile, name, email) VALUES (?,?,?)`, c.Mobile, c.Name, c.Email)
 	}
 	return s.s.ExecuteBatch(b)
 
