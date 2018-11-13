@@ -24,7 +24,7 @@ mobile number can have, at most, one email. (Depending on the business needs the
 Limitations :
 
 - The tests are not complete
-- The reader service currently puts the received contact data into an in-memory store. However, the store is de-coupled with an appropriate interface, so other
+- The reader service currently puts the received contact data into an in-memory store or into [Cassandra](http://cassandra.apache.org/). However, the store is de-coupled with an appropriate interface, so other
 implementations can be used. The interface can support batched operations.
 - The ingestor service currently creates a new UUID identifier for each new file added. The identifiers are not persisted so that a restart will
 create a new UUID and hence trigger a polling reader to re-download the data.
@@ -46,10 +46,23 @@ To run unit tests :
 
     go test -v ./pkg/...
 
-To build and run the ingestor service :
+To build and run the ingestor service serving the given datafile :
 
     go build ./cmd/ingestor && ./ingestor -l :8080 -f ./testdata/data.csv
 
 To build and run the example reader service :
 
     go build ./cmd/reader && ./reader -c :8080
+
+Alternatively, to run an example environment containing an ingestor service, and a reader service connected to a Cassandra database run :
+
+    docker-compose build
+    docker-compose up
+
+Then you can add the test data file to the ingestor service using the cli tool :
+
+    docker-compose exec ingestor /cli add -f /data/data.csv
+
+Then you can wait for the records to be imported by the reader and verify them in Cassandra using csql :
+
+    docker-compose exec cassandra cqlsh -e "SELECT * from reader.contacts"

@@ -1,0 +1,32 @@
+version: "2.1"
+services:
+  ingestor:
+    container_name: ingestor
+    hostname: ingestor
+    image: ingestor
+    volumes:
+      - ./testdata:/data
+    build:
+      context: .
+    ports:
+      - 8080:8080
+    command: /ingestor -l :8080
+  cassandra:
+    container_name: cassandra
+    image: cassandra
+    hostname: cassandra
+    volumes:
+      - ./cql:/cql
+    command: "sh /cql/schema.sh"
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(nodetool statusgossip) = running ]"]
+    ports:
+      - 9042:9042
+  reader:
+    container_name: reader
+    hostname: reader
+    image: ingestor
+    depends_on: 
+      - ingestor
+      - cassandra
+    command: sh -c "until /reader -c ingestor:8080 -s cassandra:9042; do sleep 1; done;"
