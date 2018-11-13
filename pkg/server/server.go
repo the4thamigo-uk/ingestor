@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"io"
 	"net"
+	"os"
 )
 
 // Server is the public interface used to hide the implementation details of server.
@@ -114,9 +115,13 @@ func (s *server) addSourceFiles(files []string) ([]string, error) {
 }
 
 func (s *server) addSourceFile(file string) (string, error) {
+	var err error
 	id, ok := s.m.GetByVal(file)
 	if !ok {
-		id, err := identity.New()
+		if _, err := os.Stat(file); os.IsNotExist(err) {
+			return "", err
+		}
+		id, err = identity.New()
 		if err != nil {
 			return "", err
 		}
